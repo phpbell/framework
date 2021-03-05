@@ -1,0 +1,12 @@
+/vendor
+index.php
+todo.txt
+test*.php
+cfg.php
+/public
+/bin
+/controller
+/model
+/plugin
+/table
+/view

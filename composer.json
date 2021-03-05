@@ -1,0 +1,19 @@
+{
+    "name": "bell/bell",
+	"description": "Framework em PHP funcional com views em PHP puro e models com Medoo",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Bell",
+            "email": "79753816+Bell@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "catfan/medoo": "v1.7.10"
+    },
+	"autoload": {
+		"psr-4": {
+			"Bell\\": "src"
+		}
+	}
+}
