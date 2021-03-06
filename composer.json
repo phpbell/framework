@@ -1,5 +1,5 @@
 {
-    "name": "bell/bell",
+    "name": "bell/framework",
 	"description": "Framework em PHP funcional com views em PHP puro e models com Medoo",
     "license": "MIT",
     "authors": [
@@ -9,6 +9,7 @@
         }
     ],
     "require": {
+        "php": "^7.2",
         "catfan/medoo": "v1.7.10"
     },
 	"autoload": {
