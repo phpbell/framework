@@ -95,7 +95,8 @@ class Bell{
         }
         //pegar o nome das tabelas existentes
         if($type=='sqlite'){
-            $sql='SELECT name FROM sqlite_master WHERE type="table";';
+            $sql='SELECT name FROM sqlite_master WHERE type="table" AND
+    name NOT LIKE "sqlite_%";';
         }else{
             $sql='SHOW TABLES';
         }
