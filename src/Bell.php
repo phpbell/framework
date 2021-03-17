@@ -235,7 +235,6 @@ class Bell{
     function plugin($name,...$params){
         $newParams[]='plugin';
         $newParams[]=$name;
-        $newParams[]=$this;
         foreach ($params as $param) {
             $newParams[]=$param;
         }
