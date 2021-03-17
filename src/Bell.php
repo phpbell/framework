@@ -51,19 +51,6 @@ class Bell{
         }
         return $out;
     }
-    function controller($name,...$params){
-        $newParams[]='controller';
-        $newParams[]=$name;
-        $newParams[]=$this;
-        foreach ($params as $param) {
-            $newParams[]=$param;
-        }
-        $callback=[
-            $this,
-            'universalRequire'
-        ];
-        return call_user_func_array($callback,$newParams);
-    }
     function db(){
         return $this->db;
     }
