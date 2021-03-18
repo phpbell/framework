@@ -7,7 +7,6 @@ class Bell{
     var $cfg;
     var $db;
     var $root;
-    // public functions
     function __construct($cfg){
         // configurações
         $this->cfg=$cfg;
@@ -216,13 +215,7 @@ class Bell{
     function model($name,...$params){
         $newParams[]='model';
         $newParams[]=$name;
-        $newParams[]=function(...$params){
-            $callback=[
-                $this,
-                'db'
-            ];
-            return call_user_func_array($callback,$params);
-        };
+        $newParams[]=$this->db;
         foreach ($params as $param) {
             $newParams[]=$param;
         }
