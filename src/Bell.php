@@ -7,6 +7,7 @@ class Bell{
     var $cfg;
     var $db;
     var $root;
+    var $theme;
     function __construct($cfg){
         // configurações
         $this->cfg=$cfg;
@@ -16,26 +17,23 @@ class Bell{
         $this->db=new Medoo($this->cfg['db']);
         // configurar o root
         $this->root=$this->cfg['root'];
+        // configurar o tema
+        $this->theme=$this->cfg['site']['theme'];
     }
     function asset($urls,$autoIndent=true){
-        $siteUrl=$this->cfg['url'];
-        $public=null;
-        if($_SERVER["HTTP_HOST"]=='localhost'){
-            $siteUrl=$this->cfg['localhost'];
-            $public='public/';
-        }
+        $siteUrl=$this->cfg['site']['url'];
         if(is_string($urls)){
             $arr[]=$urls;
             $urls=$arr;
         }
         $out=null;
         foreach ($urls as $key=>$url) {
-            $filename=$this->root().'/public/'.$url;
+            $filename=$this->root.'/public/'.$url;
             $path_parts = pathinfo($url);
             $ext=$path_parts['extension'];
             if(file_exists($filename)){
                 $md5=md5_file($filename);
-                $url=$siteUrl.'/'.$public.$url."?$md5";
+                $url=$siteUrl.'/'.$url."?$md5";
                 if($autoIndent AND $key<>0){
                     $out.= '    ';
                 }
@@ -50,11 +48,14 @@ class Bell{
         }
         return $out;
     }
-    function db(){
+    function db($cfg=false){
+        if($cfg){
+            $this->db=new Medoo($cfg);
+        }
         return $this->db;
     }
     function migrate(){
-        $tableFolder=$this->root().'/table';
+        $tableFolder=$this->root.'/table';
         system('clear');
         print 'migrando tabelas...'.PHP_EOL;
         // vars
@@ -82,7 +83,7 @@ class Bell{
         //pegar o nome das tabelas existentes
         if($type=='sqlite'){
             $sql='SELECT name FROM sqlite_master WHERE type="table" AND
-    name NOT LIKE "sqlite_%";';
+            name NOT LIKE "sqlite_%";';
         }else{
             $sql='SHOW TABLES';
         }
@@ -237,20 +238,43 @@ class Bell{
         ];
         return call_user_func_array($callback,$newParams);
     }
-    function root(){
-        return $this->root;
-    }
-    function view($name,...$params){
-        $newParams[]='view';
-        $newParams[]=$name;
-        foreach ($params as $param) {
-            $newParams[]=$param;
-        }
-        $callback=[
-            $this,
-            'universalRequire'
-        ];
-        return call_user_func_array($callback,$newParams);
+    function view($name,$data=[],$print=true){
+        $bellThis=$this;
+        $fn=function($bellThis,$name,$data,$print){
+            $filename=$bellThis->root.'/theme/'.$bellThis->theme.'/'.$name.'.php';
+            if(file_exists($filename)){
+                $data['data']=$data;
+                $data['site']=$bellThis->cfg['site'];
+                $data['asset']=function(...$params){
+                    $callback=[
+                        $this,
+                        'asset'
+                    ];
+                    return call_user_func_array($callback,$params);
+                };
+                $data['view']=function(...$params){
+                    $callback=[
+                        $this,
+                        'view'
+                    ];
+                    return call_user_func_array($callback,$params);
+                };
+                extract($data);
+                if($print){
+                    require $filename;
+                }else{
+                    ob_start();
+                    require $filename;
+                    $output=ob_get_contents();
+                    ob_end_clean();
+                    return $output;
+                }
+            }else{
+                $str='<b>'.$filename.'</b> not found';
+                die($str);
+            }
+        };
+        return $fn($bellThis,$name,$data,$print);
     }
     // private functions
     private function dropSqliteColumn($tableName,$columnName){
@@ -298,7 +322,7 @@ class Bell{
         }
     }
     private function universalRequire($type,$name,...$params){
-        $filename=$this->root().'/'.$type.'/'.$name.'.php';
+        $filename=$this->root.'/'.$type.'/'.$name.'.php';
         $obj=require $filename;
         return call_user_func_array($obj,$params);
     }

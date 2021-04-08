@@ -2,11 +2,12 @@
 index.php
 todo.txt
 test*.php
-cfg.php
+config.php
 /public
 /bin
 /controller
 /model
 /plugin
 /table
+/theme
 /view
